@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PS Service & Sell</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body class="bg-gray-900 text-white pb-20">
+
+    <div class="p-5 bg-blue-800 shadow-xl sticky top-0 z-50 flex justify-between items-center">
+        <div>
+            <h1 class="text-xl font-bold tracking-wider">TOP GAME</h1>
+            <p class="text-xs opacity-70">Service & Sales Manager</p>
+        </div>
+        <i class="fas fa-gamepad text-3xl opacity-30"></i>
+    </div>
+
+    <div id="content" class="p-4">
+        <div id="dataList" class="space-y-4">
+            <div class="text-center py-10 opacity-50">
+                <i class="fas fa-spinner fa-spin text-3xl mb-2"></i>
+                <p>Menghubungkan ke Google Sheets...</p>
+            </div>
+        </div>
+    </div>
+
+    <button onclick="openModal()" class="fixed bottom-24 right-6 bg-green-500 w-14 h-14 rounded-full shadow-2xl flex items-center justify-center text-2xl z-40">
+        <i class="fas fa-plus"></i>
+    </button>
+
+    <nav class="fixed bottom-0 w-full bg-gray-800 border-t border-gray-700 flex justify-around p-3 z-50">
+        <button onclick="changeTab('service')" class="flex flex-col items-center text-blue-400">
+            <i class="fas fa-tools text-xl"></i>
+            <span class="text-xs">Service</span>
+        </button>
+        <button onclick="changeTab('stok')" class="flex flex-col items-center text-gray-400">
+            <i class="fas fa-box text-xl"></i>
+            <span class="text-xs">Stok</span>
+        </button>
+        <button onclick="changeTab('kas')" class="flex flex-col items-center text-gray-400">
+            <i class="fas fa-wallet text-xl"></i>
+            <span class="text-xs">Kas</span>
+        </button>
+    </nav>
+
+    <div id="modal" class="hidden fixed inset-0 bg-black bg-opacity-90 z-[60] flex items-center justify-center p-4">
+        <div class="bg-gray-800 w-full max-w-md rounded-2xl p-6 shadow-2xl border border-gray-700">
+            <h2 class="text-xl font-bold mb-4 flex items-center">
+                <i class="fas fa-edit mr-2 text-blue-400"></i> Input Service Baru
+            </h2>
+            <div class="space-y-3">
+                <input type="text" id="nama" placeholder="Nama Pelanggan" class="w-full p-3 bg-gray-700 rounded-lg outline-none focus:ring-2 ring-blue-500">
+                <input type="number" id="wa" placeholder="WhatsApp (Contoh: 62812...)" class="w-full p-3 bg-gray-700 rounded-lg outline-none focus:ring-2 ring-blue-500">
+                <input type="text" id="unit" placeholder="Tipe Unit (PS3/PS4/PS5)" class="w-full p-3 bg-gray-700 rounded-lg outline-none focus:ring-2 ring-blue-500">
+                <textarea id="keluhan" placeholder="Keluhan / Kerusakan" class="w-full p-3 bg-gray-700 rounded-lg h-24 outline-none focus:ring-2 ring-blue-500"></textarea>
+                
+                <div class="flex gap-2 mt-4">
+                    <button onclick="closeModal()" class="flex-1 bg-gray-600 py-3 rounded-lg font-bold">Batal</button>
+                    <button onclick="submitData()" class="flex-[2] bg-blue-600 py-3 rounded-lg font-bold">Simpan ke Sheets</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // GANTI INI DENGAN URL DEPLOY GOOGLE APPS SCRIPT KAMU
+        const scriptUrl = 'URL_WEB_APP_GOOGLE_SCRIPT_KAMU';
+
+        function openModal() { document.getElementById('modal').classList.remove('hidden'); }
+        function closeModal() { document.getElementById('modal').classList.add('hidden'); }
+
+        async function submitData() {
+            const btn = event.target;
+            btn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> Mengirim...';
+            btn.disabled = true;
+
+            const data = {
+                nama: document.getElementById('nama').value,
+                wa: document.getElementById('wa').value,
+                unit: document.getElementById('unit').value,
+                keluhan: document.getElementById('keluhan').value
+            };
+
+            try {
+                await fetch(scriptUrl, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    body: JSON.stringify(data)
+                });
+                alert('Data Berhasil Terkirim ke Google Sheets!');
+                location.reload();
+            } catch (e) {
+                alert('Gagal mengirim data. Pastikan URL Script benar.');
+                console.error(e);
+            }
+        }
+
+        // Simulasi Ganti Tab (Tampilan)
+        function changeTab(tab) {
+            const btns = document.querySelectorAll('nav button');
+            btns.forEach(b => b.classList.replace('text-blue-400', 'text-gray-400'));
+            event.currentTarget.classList.replace('text-gray-400', 'text-blue-400');
+            
+            if(tab === 'service') {
+                alert('Memuat Data Service...');
+                // Di sini panggil fungsi fetch data dari Google Script
+            }
+        }
+    </script>
+</body>
+</html>
